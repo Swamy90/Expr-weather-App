@@ -1,0 +1,14 @@
+{
+  "search_city": "Search city",
+  "humidity": "Humidity",
+  "wind": "Wind",
+  "pressure": "Pressure",
+  "refresh": "Refresh",
+  "enable_location": "Enable Location",
+  "try_again": "Try Again",
+  "forecast": "5 Day Forecast",
+  "location_error": "Location permission disabled. Please enable it in settings.",
+  "Oh_no": "Oh no!",
+  "search_txt": "Search",
+  "location_permission_denied_permanently": "Location permission permanently denied. Please enable it from settings."
+}
