@@ -32,6 +32,7 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import "dayjs/locale/hi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getNextFiveDaysForecast } from "../helper";
 
 
 export default function HomeScreen() {
@@ -46,6 +47,7 @@ export default function HomeScreen() {
   const [locationAllowed, setLocationAllowed] = React.useState(true);
   const [showLangDropdown, setShowLangDropdown] = React.useState(false);
   const insets = useSafeAreaInsets();
+  const [refreshing, setRefreshing] = React.useState(false);
 
   useEffect(() => {
     dayjs.locale(i18n.language);
@@ -75,9 +77,43 @@ export default function HomeScreen() {
     }
   }, [clearSearch]);
 
-  const handleRefresh = () => {
-    setSuggestions([]);
-    loadWeatherFromLocation();
+  const handleRefresh = async () => {
+
+    try {
+
+      if (!weather?.coord) {
+        loadWeatherFromLocation();
+        return;
+      }
+
+      setRefreshing(true);
+
+      const weatherData = await fetchWeatherByCoords(
+        weather.coord.lat,
+        weather.coord.lon
+      );
+
+      dispatch(setWeather(weatherData));
+
+      const forecastData = await fetchForecastByCoords(
+        weather.coord.lat,
+        weather.coord.lon
+      );
+
+      const dailyForecast = forecastData.list.filter((item: any) =>
+        item.dt_txt.includes("12:00:00")
+      );
+
+      // dispatch(setForecast(dailyForecast.slice(0, 5)));
+      dispatch(setForecast(getNextFiveDaysForecast(forecastData?.list)));
+
+      setRefreshing(false);
+
+    } catch {
+      setRefreshing(false);
+      dispatch(setError("Unable to refresh weather"));
+    }
+
   };
 
   const loadWeatherFromLocation = async () => {
@@ -105,11 +141,7 @@ export default function HomeScreen() {
         location.longitude
       );
 
-      const dailyForecast = forecastData.list.filter((item: any) =>
-        item.dt_txt.includes("12:00:00")
-      );
-
-      dispatch(setForecast(dailyForecast.slice(0, 5)));
+      dispatch(setForecast(getNextFiveDaysForecast(forecastData?.list)));
       setLoading(false);
     } catch (error: any) {
 
@@ -120,7 +152,7 @@ export default function HomeScreen() {
 
       else if (error.message === "OPEN_SETTINGS") {
 
-       dispatch(setError(t("location_permission_denied_permanently")));
+        dispatch(setError(t("location_permission_denied_permanently")));
 
         Linking.openSettings();
       }
@@ -145,8 +177,14 @@ export default function HomeScreen() {
       return;
     }
 
-    if (!city) {
+    // if (!city) {
+    //   setSuggestions([]);
+    //   return;
+    // }
+
+    if (!city || city?.trim().length === 0) {
       setSuggestions([]);
+      loadWeatherFromLocation();
       return;
     }
 
@@ -173,12 +211,7 @@ export default function HomeScreen() {
       dispatch(setWeather(weatherData));
 
       const forecastData = await fetchForecastByCoords(city.lat, city.lon);
-
-      const dailyForecast = forecastData.list.filter((item: any) =>
-        item.dt_txt.includes("12:00:00")
-      );
-
-      dispatch(setForecast(dailyForecast.slice(0, 5)));
+      dispatch(setForecast(getNextFiveDaysForecast(forecastData?.list)));
 
     } catch {
 
@@ -258,7 +291,9 @@ export default function HomeScreen() {
 
             <ScrollView
               showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
               contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
+
             >
               <SearchBar
                 onSearch={handleCityInput}
@@ -342,10 +377,15 @@ export default function HomeScreen() {
               {weather && !loading && <TouchableOpacity
                 style={styles.refresh}
                 onPress={handleRefresh}
+                disabled={refreshing}
               >
-                <Text style={styles.refreshText}>
-                  <Text>{t("refresh")}</Text>
-                </Text>
+                {refreshing ? (
+                  <ActivityIndicator color="#4facfe" />
+                ) : (
+                  <Text style={styles.refreshText}>
+                    {t("refresh")}
+                  </Text>
+                )}
               </TouchableOpacity>}
 
             </ScrollView>

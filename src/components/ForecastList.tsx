@@ -37,6 +37,7 @@ export default function ForecastList({ data }: any) {
 
   return (
     <FlatList
+      nestedScrollEnabled
       horizontal
       data={data}
       keyExtractor={(item, index) => index.toString()}
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: "center",
     marginRight: 15,
-    width: 80,
+    width: 50,
 
   },
 
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: "600",
     textAlign: "center",
-  
+
   },
 
   icon: {

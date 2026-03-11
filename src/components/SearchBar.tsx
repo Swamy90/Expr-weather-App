@@ -37,13 +37,13 @@ export default function SearchBar({ onSearch, onSelectCity, clearTrigger }: any)
           style={styles.input}
         />
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.button}
 
           onPress={() => onSearch(city)}
         >
           <Text style={styles.buttonText}>{t("search_txt")}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
 
       </View>
