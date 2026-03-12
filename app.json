@@ -26,8 +26,6 @@
       "package": "com.anonymous.weatherapp",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
@@ -52,6 +50,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/4615a6d2-b204-4849-af5b-4769509e7062"
-    }
+    },
+    "owner": "poojaswamy"
   }
 }

@@ -6,7 +6,9 @@ import HomeScreen from "./src/screens/HomeScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import i18n from "./src/i18n";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { LogBox } from "react-native";
 
+LogBox.ignoreAllLogs(true)
 export default function App() {
   React.useEffect(() => {
 
